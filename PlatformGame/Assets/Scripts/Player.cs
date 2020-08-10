@@ -6,15 +6,18 @@ public class Player : MonoBehaviour
 {
     public float speed;
     public float jumpForce;
+
+    private Animator animator;
     private Rigidbody2D rigid;
 
-    public bool isJuming = false;
+    public bool isJuming;
     public bool doubleJump;
 
     // Start is called before the first frame update
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -29,13 +32,46 @@ public class Player : MonoBehaviour
         Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, 0f);
         transform.position += movement * Time.deltaTime * speed;
 
+        if (Input.GetAxis("Horizontal") > 0f)
+        {
+            animator.SetBool("walk", true);
+            transform.eulerAngles = new Vector3(0f, 0f, 0f);
+        }
+
+        if (Input.GetAxis("Horizontal") < 0f)
+        {
+            animator.SetBool("walk", true);
+            transform.eulerAngles = new Vector3(0f, 180f, 0f);
+        }
+
+        if (Input.GetAxis("Horizontal") == 0)
+        {
+            animator.SetBool("walk", false);
+        }
+        
+
     }
 
     void Jump()
     {
-        if (Input.GetButton("Jump") && !isJuming)
+        if (Input.GetButton("Jump"))
         {
-            rigid.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+            if (!isJuming)
+            {
+                animator.SetBool("jump", true);
+                rigid.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+                doubleJump = true;
+            }
+            else
+            {
+                if (doubleJump)
+                {
+                    Debug.Log("Double jump");
+                    rigid.AddForce(new Vector2(0f, jumpForce * 1.5f), ForceMode2D.Impulse);
+                    doubleJump = false;
+                }
+            }
+
         }
     }
 
@@ -44,6 +80,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.layer == 8)
         {
             isJuming = false;
+            animator.SetBool("jump", false);
         }
     }
 
