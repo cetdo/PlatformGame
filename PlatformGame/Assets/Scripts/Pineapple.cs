@@ -7,6 +7,9 @@ public class Pineapple : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private CapsuleCollider2D capCollider;
 
+    public int score = 0;
+
+
     public GameObject collected;
     // Start is called before the first frame update
     void Start()
@@ -23,6 +26,9 @@ public class Pineapple : MonoBehaviour
             spriteRenderer.enabled = false;
             capCollider.enabled = false;
             collected.SetActive(true);
+
+            GameController.instance.totalScore += score;
+            GameController.instance.UpdateScoreText();
 
             Destroy(gameObject, 0.4f);
         }
