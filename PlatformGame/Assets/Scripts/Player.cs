@@ -29,8 +29,18 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, 0f);
-        transform.position += movement * Time.deltaTime * speed;
+
+        if(SingleJoystick.Instance)
+		{
+            float horizontal = SingleJoystick.Instance.GetInputDirection().x;
+            Vector3 movement = new Vector3(horizontal, 0f, 0f);
+			transform.position += movement * Time.deltaTime * speed;
+			//vertical = SingleJoystick.Instance.GetInputDirection().y;
+		}
+
+
+        //Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, 0f);
+        //transform.position += movement * Time.deltaTime * speed;
 
         if (Input.GetAxis("Horizontal") > 0f)
         {
@@ -72,6 +82,25 @@ public class Player : MonoBehaviour
                 }
             }
 
+        }
+
+        if (SingleJoystick.Instance)
+        {
+            if (!isJuming)
+            {
+                animator.SetBool("jump", true);
+                rigid.AddForce(new Vector2(0f, (jumpForce*SingleJoystick.Instance.GetInputDirection().y)), ForceMode2D.Impulse);
+                doubleJump = true;
+            }
+            else
+            {
+                if (doubleJump)
+                {
+                    Debug.Log("Double jump");
+                    rigid.AddForce(new Vector2(0f, (jumpForce*SingleJoystick.Instance.GetInputDirection().y) * 1.5f), ForceMode2D.Impulse);
+                    doubleJump = false;
+                }
+            }
         }
     }
 
