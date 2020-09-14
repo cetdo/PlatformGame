@@ -10,16 +10,36 @@ public class GameController : MonoBehaviour
 
     public GameObject gameOver;
 
+    float currentTime = 0f;
+    float startingTime = 20f;
+
+    [SerializeField]
+    Text timerText;
+
     public static GameController instance;
 
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+        currentTime = startingTime;
+    }
+
+    void Update ()
+    {
+        currentTime -= 1 * Time.deltaTime;
+        timerText.text = currentTime.ToString("00");
+
+        if(currentTime <= 0)
+        {
+            currentTime = 0;
+            ShowGameOver();
+        }
     }
 
     public void UpdateScoreText()
     {
+        currentTime += 5f;
         scoreText.text = totalScore.ToString();
     }
 
